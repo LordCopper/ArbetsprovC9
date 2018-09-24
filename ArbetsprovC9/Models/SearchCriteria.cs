@@ -8,7 +8,7 @@ namespace ArbetsprovC9.Models
     public class SearchCriteria
     {
         public string Genre { get; set; }
-        public string Year { get; set; }
-        public bool OnlyUnknownArtists { get; set; }
+        public string FromYear { get; set; }
+        public string ToYear { get; set; }
     }
 }

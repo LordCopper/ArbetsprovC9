@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace ArbetsprovC9.Models
+namespace ArbetsprovC9.Models.Base
 {
-    public class Artist
+    public class BaseArtist
     {
         [JsonProperty("id")]
         public string Id { get; set; }
@@ -15,7 +15,7 @@ namespace ArbetsprovC9.Models
         public string Name { get; set; }
 
         [JsonProperty("external_urls")]
-        public Dictionary<string,string> ExternalUrls { get; set; }
+        public Dictionary<string, string> ExternalUrls { get; set; }
 
         [JsonProperty("genres")]
         public string[] Genres { get; set; }
@@ -25,5 +25,16 @@ namespace ArbetsprovC9.Models
 
         [JsonProperty("images")]
         public Image[] Image { get; set; }
+
+        [JsonProperty("popularity")]
+        public int Popularity { get; set; }
+
+        [JsonProperty("uri")]
+        public string Uri { get; set; }
+
+        [JsonProperty("type")]
+        public string Type { get; set; }
+
     }
 }
+

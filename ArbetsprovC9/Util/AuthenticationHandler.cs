@@ -10,8 +10,9 @@ using System.Web;
 using System.Collections.Generic;
 using System.Text;
 using ArbetsprovC9.Models;
+using ArbetsprovC9.Models.Util;
 
-namespace ArbetsprovC9.Controllers
+namespace ArbetsprovC9.Util
 {
     public class AuthenticationHandler: DelegatingHandler
     {

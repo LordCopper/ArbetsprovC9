@@ -1,4 +1,7 @@
 ﻿using ArbetsprovC9.Models;
+using ArbetsprovC9.Models.Base;
+using ArbetsprovC9.Models.ViewModels;
+using ArbetsprovC9.Util;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -12,57 +15,45 @@ namespace ArbetsprovC9.Controllers
 {
     public class HomeController : Controller
     {
-        private const string ClientId = "996d0037680544c987287a9b0470fdbb";
-        private const string ClientSecret = "5a3c92099a324b8f9e45d77e919fec13";
 
-        protected const string BaseUrl = "https://api.spotify.com/";
 
-        private HttpClient GetDefaultClient()
+
+        public async Task<ResultViewModel> GetSearchResult(SearchCriteria searchCriteria)
         {
-            AuthenticationHandler authHandler = new AuthenticationHandler(ClientId, ClientSecret, new HttpClientHandler());
-
-            HttpClient client = new HttpClient(authHandler)
-            {
-                BaseAddress = new Uri(BaseUrl)
-            };
-
-            return client;
+            Search searchSpotifyApi = new Search();
+            SearchArtistResults searchResults = await searchSpotifyApi.SearchArtistsAsync(searchCriteria.Genre, searchCriteria.FromYear, searchCriteria.ToYear);
+            ResultViewModel finalResults = await searchSpotifyApi.GeneratePresentationModel(searchResults);
+            return finalResults;
         }
 
-        public async Task<SearchResults> SearchAsync(string genre, string fromYear = null, string toYear = null, string offset = null)
+        public async Task<ResultViewModel> GetUrlSearchResult(string url)
         {
-            var client = GetDefaultClient();
-
-            string url = "/v1/search?q=tag%3Ahipster%20";
-            if (!string.IsNullOrWhiteSpace(genre))
-            {
-                genre = genre.Replace(" ", "%20").Replace("\"", "");
-                url += "genre:%22" + genre + "%22";
-            }
- 
-            if (fromYear != null && toYear != null)
-            {
-                url += "year:" + fromYear + "-" + toYear;
-            }
-            else if (fromYear != null || toYear != null)
-            {
-                url += "year:" + fromYear + toYear;
-            }
- 
-            if (offset != null)
-                url += "&limit=" + offset;
-
-            string response = await client.GetStringAsync(url);
-
-            var artistResponse = JsonConvert.DeserializeObject<SearchResults>(response);
-            return artistResponse;
+            Search searchSpotifyApi = new Search();
+            SearchArtistResults searchResults = await searchSpotifyApi.SearchNextArtistsAsync(url);
+            ResultViewModel finalResults = await searchSpotifyApi.GeneratePresentationModel(searchResults);
+            return finalResults;
         }
 
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            SearchResults results =  SearchAsync("hip hop").Result;
-            return View();
+
+            //SearchArtistResults results = await SearchArtistsAsync("hip hop");
+            //SearchTrackResults track = await SearchTracksAsync(results.Artists.Items[0].Name);
+            //BaseTrack baseTrack = track.Tracks.Items.FirstOrDefault(x => x.PreviewURL != null);
+            return View(new SearchCriteria());
         }
 
+        [HttpPost]
+        public async Task<ActionResult> Index(SearchCriteria searchCriteria)
+        {
+            ResultViewModel searchResults = await GetSearchResult(searchCriteria);           
+            return View("Result", searchResults);
+        }
+
+        public async Task<ActionResult> Result(string navUrl)
+        {
+            ResultViewModel searchResults = await GetUrlSearchResult(navUrl);
+            return View(searchResults);
+        }
     }
 }

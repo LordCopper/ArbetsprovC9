@@ -1,4 +1,60 @@
-﻿@{
-    ViewBag.Title = "Home Page";
+﻿@model ArbetsprovC9.Models.SearchCriteria
+
+@{
+    ViewBag.Title = "Ny sökning";
 }
 
+<h2>Index</h2>
+<div class="jumbotron">
+    <h1>Välkommen till Artist Hittaren</h1>
+    <p>Ett snabbt och bekvämt sätt att hitta nya artister på Spotify</p>
+</div>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+<div class="form-horizontal">
+    <h4>Vad letar du efter?</h4>
+    <h5>Du kan fokusera ditt sökande bättre genom att ange en genre, ett år eller en tidsperiod.</h5>
+    <h5>Du kan även lämna allt blankt och se vad du får.</h5>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <span>Här kan du ange en genre, var uppmärksam på att "hip hop rock rap" kommer räknas som en kombinerad genre</span>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Genre, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Genre, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Genre, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <span>Här kan du ange en tidsperiod, om du bara vill hitta artister från ett specifikt år lämna ett fält blankt</span>
+    <div class="form-group">
+        @Html.LabelFor(model => model.FromYear, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.FromYear, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.FromYear, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.ToYear, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.ToYear, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.ToYear, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Sök" class="btn btn-default" />
+        </div>
+    </div>
+</div>
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

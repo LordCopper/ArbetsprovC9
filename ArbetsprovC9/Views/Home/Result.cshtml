@@ -1,0 +1,80 @@
+﻿<link href="~/Content/ResultatView.css" rel="stylesheet" />
+@model ArbetsprovC9.Models.ViewModels.ResultViewModel
+
+@{
+    ViewBag.Title = "Resultat";
+}
+
+<h2>Resultat @(Model.Offset + 1)-@(Model.Offset + Model.Limit) av @Model.Total</h2>
+<h4>Du kan gå till artistens sida på Spotifys webspelare genom att klicka på namnet.</h4>
+<div class="container result-container">
+    @{int x = 1; }
+    @if (Model.viewArtists.Count > 0)
+    {
+        do
+        {
+            <div class="row">
+                @do
+                {
+                    <div class="col-xs-12 col-sm-12 col-md-3">
+                        <div class="title">
+                            <h3><a href=@Model.viewArtists[x-1].ExternalUrl>@Model.viewArtists[x - 1].Name</a></h3>
+                        </div>
+                        <br />
+                        <div class="image-box">
+                            @if (Model.viewArtists[x - 1].HasImage)
+                            {
+                                <image class="img-responsive img-thumbnail" src=@Model.viewArtists[x-1].Image.Url />
+                            }
+                            else
+                            {
+                                <image class="img-responsive img-thumbnail" src="~/Content/Image/noimage.jpg" />
+                            }
+                        </div>
+                        @if (Model.viewArtists[x - 1].HasPreviewTrack)
+                        {
+                            <audio controls class="audio-element">
+                                <source src=@Model.viewArtists[x-1].PreviewTrack.PreviewURL />
+                                <p>Din browser stödjer inte HTML 5's audio element</p>
+                            </audio>
+                        }
+                        else if (Model.viewArtists[x - 1].HasTracks)
+                        {
+                            <div class="audio-element">
+                                Artisten har inga spår som tillåter smakprov.
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="audio-element">
+                                Artisten har inga spår på Spotify.
+                            </div>
+                        }
+                    </div>
+                } while ((x < Model.viewArtists.Count()) && (x++ % 4 != 0));
+
+            </div>
+            <br />
+        } while ((x) < Model.viewArtists.Count());
+    }
+    else
+    {
+        <h1>Fanns inga artister som matchade sökningen.</h1>
+    }
+</div>
+<div class="row clearfix">
+    @if (!String.IsNullOrWhiteSpace(Model.Previous))
+    {
+        <div class="col-xs-6 col-md-6 pull-left text-left">
+            <span class="glyphicon glyphicon-backward nav-link"></span>
+            @Html.ActionLink("Tidigare", "Result", new { navUrl = Model.Previous }, new { @class = "nav-link" })
+        </div>
+    }
+    @if (!String.IsNullOrWhiteSpace(Model.Next))
+    {
+        <div class="col-xs-6 col-md-6 pull-right text-right">
+            @Html.ActionLink("Nästa", "Result", new { navUrl = Model.Next }, new { @class = "nav-link" })
+            <span class="glyphicon glyphicon-forward nav-link"></span>
+        </div>
+    }
+</div>

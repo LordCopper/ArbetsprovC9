@@ -18,7 +18,7 @@ namespace ArbetsprovC9.Models.ViewModels
         public string ExternalUrl { get; set; }
 
         [Display(Name = "Andra genres")]
-        public string[] Genres { get; set; }
+        public string Genres { get; set; }
 
         public string APIEndpointHRefForDetails { get; set; }
 
@@ -47,9 +47,17 @@ namespace ArbetsprovC9.Models.ViewModels
                 ExternalUrl = baseArtist.ExternalUrls["spotify"];
             }
 
-            Genres = baseArtist.Genres;
+            foreach(string genre in baseArtist.Genres)
+            {
+                Genres += genre+", ";
+            }
+            if( Genres != null)
+            {
+                Genres = Genres.Remove(Genres.Length - 2);
+            }
 
             HasImage = false;
+
             if (baseArtist.Image.Count() > 0)
             {
                 Image = baseArtist.Image[0];

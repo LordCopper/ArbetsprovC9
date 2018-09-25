@@ -46,6 +46,13 @@ namespace ArbetsprovC9.Controllers
         [HttpPost]
         public async Task<ActionResult> Index(SearchCriteria searchCriteria)
         {
+
+            if (Convert.ToInt32(searchCriteria.FromYear) > Convert.ToInt32(searchCriteria.ToYear))
+            {
+                string temp = searchCriteria.ToYear;
+                searchCriteria.ToYear = searchCriteria.FromYear;
+                searchCriteria.FromYear = temp;
+            }
             ResultViewModel searchResults = await GetSearchResult(searchCriteria);           
             return View("Result", searchResults);
         }

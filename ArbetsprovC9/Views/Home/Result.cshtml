@@ -7,8 +7,11 @@
 
 <h2>Resultat @(Model.Offset + 1)-@(Model.Offset + Model.Limit) av @Model.Total</h2>
 <h4>Du kan gå till artistens sida på Spotifys webspelare genom att klicka på namnet.</h4>
+<h4>Du kan även klicka på namnet för spåret under artisten för att gå direkt till albumet.</h4>
+<h4>Om ett spår har ikonen <span class="glyphicon glyphicon-fire text-danger"></span> brevid sig är den märkt som <span class="text-danger">Explicit</span> på Spotify</h4>
+<br />
 <div class="container result-container">
-    @{int x = 1; }
+    @{int x = 0;}
     @if (Model.viewArtists.Count > 0)
     {
         do
@@ -17,44 +20,70 @@
                 @do
                 {
                     <div class="col-xs-12 col-sm-12 col-md-3">
-                        <div class="title">
-                            <h3><a href=@Model.viewArtists[x-1].ExternalUrl>@Model.viewArtists[x - 1].Name</a></h3>
+                        <div class="artist-name">
+                            <h3><a href=@Model.viewArtists[x].ExternalUrl>@Model.viewArtists[x].Name</a></h3>
+                        </div>
+                        <br />
+                        <div class="genres">
+                            Genres:<br />
+                            @Model.viewArtists[x].Genres
                         </div>
                         <br />
                         <div class="image-box">
-                            @if (Model.viewArtists[x - 1].HasImage)
+                            @if (Model.viewArtists[x].HasImage)
                             {
-                                <image class="img-responsive img-thumbnail" src=@Model.viewArtists[x-1].Image.Url />
+                                <image class="img-responsive img-thumbnail" src=@Model.viewArtists[x].Image.Url />
                             }
                             else
                             {
                                 <image class="img-responsive img-thumbnail" src="~/Content/Image/noimage.jpg" />
                             }
                         </div>
-                        @if (Model.viewArtists[x - 1].HasPreviewTrack)
-                        {
-                            <audio controls class="audio-element">
-                                <source src=@Model.viewArtists[x-1].PreviewTrack.PreviewURL />
-                                <p>Din browser stödjer inte HTML 5's audio element</p>
-                            </audio>
-                        }
-                        else if (Model.viewArtists[x - 1].HasTracks)
-                        {
-                            <div class="audio-element">
-                                Artisten har inga spår som tillåter smakprov.
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="audio-element">
-                                Artisten har inga spår på Spotify.
-                            </div>
-                        }
+
+                        <div class="track-info">
+                            @if (Model.viewArtists[x].HasPreviewTrack)
+                            {
+                                <div class="track-title">
+                                    @if (Model.viewArtists[x].HasTracks && Model.viewArtists[x].PreviewTrack.IsExplicit)
+                                    {
+                                        <span class="glyphicon glyphicon-fire text-danger"></span>
+                                    }
+                                    <a href=@Model.viewArtists[x].PreviewTrack.ExternalUrl>
+                                        @Model.viewArtists[x].PreviewTrack.Name
+                                    </a>
+                                </div>
+                                <audio controls class="audio-element">
+                                    <source src=@Model.viewArtists[x].PreviewTrack.PreviewURL />
+                                    <p>Din browser stödjer inte HTML 5's audio element</p>
+                                </audio>
+                            }
+                            else if (Model.viewArtists[x].HasTracks)
+                            {
+                                <div class="track-title">
+                                    @if (Model.viewArtists[x].HasTracks && Model.viewArtists[x].PreviewTrack.IsExplicit)
+                                    {
+                                        <span class="glyphicon glyphicon-fire text-warning"></span>
+                                    }
+                                    <a href=@Model.viewArtists[x].PreviewTrack.ExternalUrl>
+                                        @Model.viewArtists[x].PreviewTrack.Name
+                                    </a>
+                                </div>
+                                <div class="audio-element">
+                                    Artisten har inga smakprov.
+                                </div>
+                            }
+                            else
+                            {
+                                <br />
+                                <span class="audio-element">
+                                    Artisten har inga spår på Spotify.
+                                </span>
+                            }
+                        </div>
                     </div>
-                } while ((x < Model.viewArtists.Count()) && (x++ % 4 != 0));
+                } while ((++x < Model.viewArtists.Count()) && (x % 4 != 0));
 
             </div>
-            <br />
         } while ((x) < Model.viewArtists.Count());
     }
     else
@@ -66,15 +95,13 @@
     @if (!String.IsNullOrWhiteSpace(Model.Previous))
     {
         <div class="col-xs-6 col-md-6 pull-left text-left">
-            <span class="glyphicon glyphicon-backward nav-link"></span>
-            @Html.ActionLink("Tidigare", "Result", new { navUrl = Model.Previous }, new { @class = "nav-link" })
+            <a href="@Url.Action("Result", "Home", new { navUrl = Model.Previous })" class="nav-link"><span class="glyphicon glyphicon-backward nav-link"> Tidigare</span></a>
         </div>
     }
     @if (!String.IsNullOrWhiteSpace(Model.Next))
     {
         <div class="col-xs-6 col-md-6 pull-right text-right">
-            @Html.ActionLink("Nästa", "Result", new { navUrl = Model.Next }, new { @class = "nav-link" })
-            <span class="glyphicon glyphicon-forward nav-link"></span>
+            <a href="@Url.Action("Result", "Home", new { navUrl = Model.Next })" class="nav-link">Nästa <span class="glyphicon glyphicon-forward nav-link"></span></a>
         </div>
     }
 </div>
